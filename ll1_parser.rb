@@ -5,7 +5,8 @@ require 'terminal-table'
 
 def words
   word1 = 'caaadbebeb'
-  [word1]
+  word_sam = 'bacbcbcde'
+  [word1, word_sam]
 end
 
 def test_grammar
@@ -18,11 +19,18 @@ def test_grammar
                    'Y -> # | aY',
                    'D -> bZ',
                    'Z -> # | ebZ']
-  [grammar1, grammar19]
+  grammar_sam = ['S -> Ae',
+                 'A -> bcL',
+                 'L -> Ed',
+                 'E -> DF',
+                 'F -> # | bDF',
+                 'D -> a'
+               ]
+  [grammar1, grammar19, grammar_sam]
 end
 
 puts 'Grammar (# for EPS): '
-puts grammar = test_grammar[1]
+puts grammar = test_grammar[2]
 puts ''
 
 def give_productions(grammar, no_productions)
@@ -88,7 +96,7 @@ def follow(s, productions, ans)
           first_of_next = first(value[idx+1..value.size], productions)
           return ans[s] |= first_of_next unless first_of_next === '#'
           if ans.has_key?(lhs)
-            temp = ans[lhs]
+            tmp = ans[lhs]
           else
             ans = follow(lhs, productions, ans)
             tmp = ans[lhs]
@@ -156,7 +164,7 @@ def parse(table, start_symb, word)
   end
   tablle = Terminal::Table.new :title => "w = #{word}", :headings => ['STACK', 'INPUT', 'OUTPUT'], :rows => rows
   puts tablle
-  puts flag == 0 ? "\t"*5+"\s\sSTRING ACCEPTED\n" : "\t"*5+"\s\sSTRING NOT ACCEPTED\n"
+  puts flag == 0 ? "\t"*5+"\s\sSTRING ACCEPTED\n" : "\t"*4+"STRING NOT ACCEPTED\n"
 end
 
 productions = Hash[grammar.each.map { |value| [value[0], Set[*value[1..].scan(/[^->|\s]+/)]] }]
@@ -179,7 +187,7 @@ productions.each_pair do |lhs, _rhs|
   follow_hash[lhs] << follow(lhs, productions, follow_hash)
 end
 
-puts "\nFollow\n\n"
+puts "\nFOLLOW\n\n"
 pp follow_hash
 
 ll1_table = give_parsing_table(productions, first_hash, follow_hash)
@@ -188,7 +196,7 @@ puts "\nLL(1) table\n\n"
 pp ll1_table
 
 print "\nEnter the string:\t"
-word = words[0]
+word = words[1]
 p word
 
 start_symb = productions.first[0]
